@@ -6,11 +6,9 @@
  *                                                                           *
  *****************************************************************************/
 
-module keyboard_testing #(parameter INITIALIZE_MOUSE = 0) (
+module PS2_Controller #(parameter INITIALIZE_MOUSE = 0) (
 	// Inputs
 	CLOCK_50,
-	reset,
-	LEDR,
 
 	the_command,
 	send_command,
@@ -37,8 +35,6 @@ module keyboard_testing #(parameter INITIALIZE_MOUSE = 0) (
  *****************************************************************************/
 // Inputs
 input			CLOCK_50;
-input			reset;
-output			[9:0] LEDR;
 
 input	[7:0]	the_command;
 input			send_command;
@@ -56,6 +52,10 @@ output		 	received_data_en;
 
 wire [7:0] the_command_w;
 wire send_command_w, command_was_sent_w, error_communication_timed_out_w;
+
+wire reset;
+
+assign reset = 1'b0;
 
 generate
 	if(INITIALIZE_MOUSE) begin
@@ -227,7 +227,7 @@ assign wait_for_incoming_data	=
 /*****************************************************************************
  *                              Internal Modules                             *
  *****************************************************************************/
-
+ 
 Altera_UP_PS2_Data_In PS2_Data_In (
 	// Inputs
 	.clk							(CLOCK_50),
@@ -246,13 +246,6 @@ Altera_UP_PS2_Data_In PS2_Data_In (
 	.received_data					(received_data),
 	.received_data_en				(received_data_en)
 );
-
-assign LEDR[7:0] = received_data;
-
-if (recieved_data == 5'd29)
-	assign LEDR[9] = 1;
-	
-	
 
 
 Altera_UP_PS2_Command_Out PS2_Command_Out (
